@@ -58,26 +58,57 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
         
-        .card-gradient-workout { border-left: 4px solid var(--accent-green); background: linear-gradient(145deg, #1e293b, #0f172a); }
-        .card-gradient-test { border-left: 4px solid var(--accent-purple); background: linear-gradient(145deg, #1e293b, #0f172a); }
+        .card-gradient-workout { 
+            border-left: 4px solid var(--accent-green); 
+            background: linear-gradient(145deg, #1e293b, #0f172a); 
+        }
         
-        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.1); }
-        .dot.completed { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        .card-gradient-test { 
+            border-left: 4px solid var(--accent-purple); 
+            background: linear-gradient(145deg, #1e293b, #0f172a); 
+        }
+        
+        .dot { 
+            width: 6px; 
+            height: 6px; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.1); 
+        }
+        
+        .dot.completed { 
+            background: var(--accent-green); 
+            box-shadow: 0 0 8px var(--accent-green); 
+        }
 
-        input[type="range"] { -webkit-appearance: none; background: #334155; height: 6px; border-radius: 5px; }
+        input[type="range"] { 
+            -webkit-appearance: none; 
+            background: #334155; 
+            height: 6px; 
+            border-radius: 5px; 
+        }
+        
         input[type="range"]::-webkit-slider-thumb { 
-            -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; 
-            background: var(--accent-green); border: 4px solid #0f172a;
+            -webkit-appearance: none; 
+            height: 22px; 
+            width: 22px; 
+            border-radius: 50%; 
+            background: var(--accent-green); 
+            border: 4px solid #0f172a;
         }
 
         .create-day-box { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideIn { 
+            from { opacity: 0; transform: translateX(-10px); } 
+            to { opacity: 1; transform: translateX(0); } 
+        }
 
         ::-webkit-scrollbar { display: none; }
 
-        /* Stile specifico per il Conta Serie */
         .counter-circle {
             width: 54px;
             height: 54px;
@@ -104,13 +135,17 @@
             font-weight: 800;
             text-transform: uppercase;
         }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out;
+        }
     </style>
 </head>
 <body class="pb-40">
 
     <header class="sticky top-0 z-40 bg-[#0f172a]/80 backdrop-blur-md px-6 pb-6 flex justify-between items-center border-b border-white/5">
         <div id="header-back-btn" class="hidden mr-4 cursor-pointer p-2 bg-slate-800 rounded-xl" onclick="backToHome()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </div>
         <h1 class="text-xl font-black tracking-tighter uppercase italic text-white">Olympus<span class="text-emerald-500">Pro</span></h1>
         <div class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
@@ -139,9 +174,11 @@
             <div id="active-session-container" class="hidden animate-fadeIn">
                 <div id="session-header" class="mb-8"></div>
                 <div id="session-exercises" class="space-y-6"></div>
+                
                 <div class="mt-10 p-6 bg-slate-800/50 rounded-[32px] border border-white/5">
-                    <label class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-3 block">Nota Finale Sessione</label>
-                    <textarea id="session-final-note" rows="3" class="w-full bg-slate-900 rounded-[24px] p-4 text-sm text-white outline-none resize-none border border-white/5" placeholder="Com'è andata?"></textarea>
+                    <label class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-3 block text-center">Nota Finale Sessione</label>
+                    <textarea id="session-final-note" rows="3" class="w-full bg-slate-900 rounded-[24px] p-4 text-sm text-white outline-none resize-none border border-white/5" placeholder="Com'è andata la sessione?"></textarea>
+                    
                     <div class="grid grid-cols-2 gap-4 mt-6">
                         <button onclick="skipSession()" class="bg-slate-700/50 text-slate-400 py-5 rounded-[24px] font-bold uppercase text-[10px] tracking-widest border border-white/5">Salta</button>
                         <button onclick="finishSession()" class="bg-emerald-500 text-slate-900 py-5 rounded-[24px] font-black uppercase text-[10px] tracking-widest shadow-lg shadow-emerald-500/20">Fine</button>
@@ -153,6 +190,7 @@
         <section id="create" class="tab-content">
             <div class="bg-slate-800 p-6 md:p-8 rounded-[40px] border border-white/5 space-y-8 shadow-2xl">
                 <input type="hidden" id="edit-id" value="">
+                
                 <div class="flex p-1.5 bg-slate-900 rounded-[22px]">
                     <button id="btn-mode-plan" onclick="setCreateMode('plan')" class="flex-1 py-3 rounded-[18px] text-[10px] font-black bg-emerald-500 text-slate-900 uppercase transition-all">Allenamento</button>
                     <button id="btn-mode-test" onclick="setCreateMode('test')" class="flex-1 py-3 rounded-[18px] text-[10px] font-black text-slate-400 uppercase transition-all">Test / PR</button>
@@ -179,6 +217,18 @@
         </section>
 
         <section id="history" class="tab-content">
+            <div class="grid grid-cols-2 gap-4 mb-10">
+                <button onclick="exportData()" class="flex items-center justify-center gap-2 bg-slate-800 border border-white/5 py-5 rounded-[26px] text-[10px] font-black uppercase tracking-widest text-slate-400 active:scale-95 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Esporta Dati
+                </button>
+                <button onclick="document.getElementById('importFile').click()" class="flex items-center justify-center gap-2 bg-slate-800 border border-white/5 py-5 rounded-[26px] text-[10px] font-black uppercase tracking-widest text-emerald-500 active:scale-95 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Importa Dati
+                </button>
+                <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
+            </div>
+
             <div id="history-container" class="space-y-6"></div>
         </section>
     </main>
@@ -200,27 +250,64 @@
 
     <script>
         // --- Core Data & State ---
-        let data = JSON.parse(localStorage.getItem('gymDataV7.9')) || { plans: [], tests: [], logs: [] };
+        let data = JSON.parse(localStorage.getItem('gymDataV7.9')) || {
+            plans: [],
+            tests: [],
+            logs: []
+        };
+
         let activeSession = null;
         let createMode = 'plan';
-        let timerInterval = null;
-        let secondsRemaining = 0; // Usata qui come contatore serie
-        let isTimerRunning = false;
+        let secondsRemaining = 0; 
 
-        const saveToLocal = () => localStorage.setItem('gymDataV7.9', JSON.stringify(data));
+        const saveToLocal = () => {
+            localStorage.setItem('gymDataV7.9', JSON.stringify(data));
+        };
+
+        // --- Funzioni Backup (Import/Export) ---
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "OlympusPro_Backup_" + new Date().toLocaleDateString() + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (confirm("Vuoi davvero sovrascrivere tutti i dati attuali con questo backup?")) {
+                        data = importedData;
+                        saveToLocal();
+                        location.reload();
+                    }
+                } catch (err) {
+                    alert("Errore: il file selezionato non è un backup valido.");
+                }
+            };
+            reader.readAsText(file);
+        }
 
         // --- Navigation ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+            
             document.getElementById(tabId).classList.add('active');
             
             const btnIdx = tabId === 'home' ? 0 : tabId === 'create' ? 1 : 2;
             document.querySelectorAll('.nav-button')[btnIdx].classList.add('active');
             
+            // Cleanup creazione se cambio tab
             if(tabId !== 'create') {
-                const delBtn = document.getElementById('delete-obj-btn');
-                if(delBtn) delBtn.remove();
+                const existingDeleteBtn = document.getElementById('delete-obj-btn');
+                if(existingDeleteBtn) existingDeleteBtn.remove();
                 document.getElementById('edit-id').value = '';
                 document.getElementById('save-btn').innerText = 'Salva Programma';
                 document.getElementById('create-days-container').innerHTML = '';
@@ -229,11 +316,12 @@
 
             if(tabId === 'home') renderHome();
             if(tabId === 'history') renderHistory();
+            
             backToHome();
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
         }
 
-        // --- Home Rendering ---
+        // --- Home & Rendering ---
         function renderHome() {
             const planGrid = document.getElementById('plan-list');
             const archiveGrid = document.getElementById('archive-list');
@@ -257,14 +345,18 @@
         function renderCard(obj, type, isArchived = false) {
             const next = getNextSessionInfo(obj, type);
             let dots = '';
+            
             if(type === 'plan') {
                 for(let w=1; w<=obj.weeks; w++) {
-                    const done = data.logs.filter(l => l.parentId === obj.id && l.week == w).length >= obj.days.length;
+                    const sessionsInWeek = obj.days.length;
+                    const completedInWeek = data.logs.filter(l => l.parentId === obj.id && l.week == w).length;
+                    const done = completedInWeek >= sessionsInWeek;
                     dots += `<div class="dot ${done ? 'completed' : ''}"></div>`;
                 }
             }
+
             const colorClass = type === 'plan' ? 'card-gradient-workout' : 'card-gradient-test';
-            let statusLabel = next.isFinished ? 'Completato' : `Prossimo: ${next.dayName} • S${next.week}`;
+            let statusLabel = next.isFinished ? 'Programma Completato' : `Prossimo: ${next.dayName} • Sett. ${next.week}`;
             if (isArchived) statusLabel = "Archiviato - Clicca per Ripristinare";
 
             const clickAction = isArchived ? `restoreObject(${obj.id})` : `startSession(${obj.id}, '${type}')`;
@@ -276,157 +368,47 @@
                             <h3 class="font-extrabold text-white text-lg tracking-tight">${obj.name}</h3>
                             <p class="text-[9px] font-black ${next.isFinished ? 'text-emerald-500' : 'text-slate-400'} uppercase mt-2 tracking-widest">${statusLabel}</p>
                         </div>
-                        <div class="flex flex-wrap gap-1.5 justify-end max-w-[60px]">${dots}</div>
+                        <div class="flex flex-wrap gap-1.5 justify-end max-w-[60px]">
+                            ${dots}
+                        </div>
                     </div>
-                    <button onclick="editObject(${obj.id}, '${type}')" class="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-slate-900/50 rounded-2xl text-slate-400 hover:text-emerald-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    <button onclick="editObject(${obj.id}, '${type}')" class="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-slate-900/50 rounded-2xl text-slate-400 hover:text-emerald-500 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                     </button>
-                </div>`;
+                </div>
+            `;
         }
 
-        // --- Data Management (Edit/Delete/Save) ---
-        function editObject(id, type) {
-            const obj = type === 'plan' ? data.plans.find(p => p.id === id) : data.tests.find(t => t.id === id);
-            if(!obj) return;
-            switchTab('create');
-            setCreateMode(type);
-            document.getElementById('edit-id').value = obj.id;
-            document.getElementById('create-name').value = obj.name;
-            document.getElementById('create-weeks').value = obj.weeks || 1;
-            document.getElementById('save-btn').innerText = 'Aggiorna Programma';
-            
-            if(!document.getElementById('delete-obj-btn')) {
-                const delBtn = document.createElement('button');
-                delBtn.id = 'delete-obj-btn';
-                delBtn.className = "w-full mt-4 bg-red-500/10 text-red-500 py-6 rounded-[28px] font-black uppercase tracking-widest text-xs border border-red-500/20";
-                delBtn.innerText = "Elimina Definitivamente";
-                delBtn.onclick = () => deleteObject(obj.id, type);
-                document.getElementById('create-actions-container').appendChild(delBtn);
-            }
-
-            document.getElementById('create-days-container').innerHTML = '';
-            obj.days.forEach(day => {
-                addCreateDay();
-                const dayBox = document.querySelector('.create-day-box:last-child');
-                dayBox.querySelector('.day-name').value = day.name;
-                day.exercises.forEach(ex => {
-                    addCreateExercise(dayBox.querySelector('button[onclick="addCreateExercise(this)"]'));
-                    const exRow = dayBox.querySelector('.create-ex-row:last-child');
-                    exRow.querySelector('.ex-name').value = ex.name;
-                    exRow.querySelector('.ex-sets').value = ex.sets;
-                    exRow.querySelector('.ex-reps').value = ex.reps;
-                    exRow.querySelector('.ex-kg').value = ex.kg;
-                    exRow.querySelector('.ex-rest').value = ex.rest;
-                    
-                    if(ex.progression && type === 'plan') {
-                        exRow.querySelector('.progression-inputs').classList.remove('hidden');
-                        exRow.querySelector('.prog-sets').value = ex.progression.sets;
-                        exRow.querySelector('.prog-reps').value = ex.progression.reps;
-                        exRow.querySelector('.prog-kg').value = ex.progression.kg;
-                        exRow.querySelector('.prog-rest').value = ex.progression.rest;
-                    }
-                });
-            });
-        }
-
-        function deleteObject(id, type) {
-            if(confirm("Eliminare definitivamente la scheda?")) {
-                if(type === 'plan') data.plans = data.plans.filter(p => p.id !== id);
-                else data.tests = data.tests.filter(t => t.id !== id);
-                data.logs = data.logs.filter(l => l.parentId !== id);
-                saveToLocal();
-                location.reload();
-            }
-        }
-
-        function restoreObject(id) {
-            const plan = data.plans.find(p => p.id === id);
-            if(plan) {
-                plan.isArchived = false;
-                saveToLocal();
-                renderHome();
-                alert("Scheda ripristinata.");
-            }
-        }
-
-        function saveCreatedObject() {
-            const name = document.getElementById('create-name').value;
-            const editId = document.getElementById('edit-id').value;
-            if(!name) return alert("Nome mancante");
-            
-            const obj = { 
-                id: editId ? parseInt(editId) : Date.now(), 
-                name: name, 
-                isArchived: false, 
-                weeks: createMode === 'plan' ? (parseInt(document.getElementById('create-weeks').value) || 1) : 1, 
-                days: [] 
-            };
-            
-            document.querySelectorAll('.create-day-box').forEach(dayBox => {
-                const day = { name: dayBox.querySelector('.day-name').value || "Sessione", exercises: [] };
-                dayBox.querySelectorAll('.create-ex-row').forEach(exRow => {
-                    const ex = {
-                        name: exRow.querySelector('.ex-name').value || "Esercizio",
-                        sets: exRow.querySelector('.ex-sets').value || "0",
-                        reps: exRow.querySelector('.ex-reps').value || "0",
-                        kg: exRow.querySelector('.ex-kg').value || "0",
-                        rest: exRow.querySelector('.ex-rest').value || "0"
-                    };
-                    if(createMode === 'plan') {
-                        ex.progression = {
-                            sets: exRow.querySelector('.prog-sets').value || "0",
-                            reps: exRow.querySelector('.prog-reps').value || "0",
-                            kg: exRow.querySelector('.prog-kg').value || "0",
-                            rest: exRow.querySelector('.prog-rest').value || "0"
-                        };
-                    }
-                    day.exercises.push(ex);
-                });
-                if(day.exercises.length > 0) obj.days.push(day);
-            });
-
-            if (editId) {
-                if(createMode === 'plan') { 
-                    const idx = data.plans.findIndex(p => p.id == editId); 
-                    obj.isArchived = data.plans[idx].isArchived;
-                    data.plans[idx] = obj; 
-                }
-                else { const idx = data.tests.findIndex(t => t.id == editId); data.tests[idx] = obj; }
-            } else {
-                if(createMode === 'plan') data.plans.push(obj); else data.tests.push(obj);
-            }
-            saveToLocal();
-            location.reload();
-        }
-
-        // --- Session Management ---
         function getNextSessionInfo(obj, type) {
             const logs = data.logs.filter(l => l.parentId === obj.id);
             if(logs.length === 0) return { week: 1, dayIdx: 0, dayName: obj.days[0].name };
-            
-            const last = logs[0]; 
-            let nextWeek = last.week;
-            let nextDayIdx = last.dayIdx + 1;
 
-            if(nextDayIdx >= obj.days.length) { 
-                nextDayIdx = 0; 
-                nextWeek++; 
+            const lastLog = logs[0];
+            let nextWeek = lastLog.week;
+            let nextDayIdx = lastLog.dayIdx + 1;
+
+            if(nextDayIdx >= obj.days.length) {
+                nextDayIdx = 0;
+                nextWeek++;
             }
-            
+
             if(type === 'plan' && nextWeek > obj.weeks) return { isFinished: true };
             if(type === 'test' && nextWeek > 1) return { isFinished: true };
-            
+
             return { week: nextWeek, dayIdx: nextDayIdx, dayName: obj.days[nextDayIdx].name };
         }
 
+        // --- Session Logic ---
         function startSession(id, type) {
             const obj = type === 'plan' ? data.plans.find(p => p.id === id) : data.tests.find(t => t.id === id);
             const next = getNextSessionInfo(obj, type);
+
             const dayIdx = next.isFinished ? 0 : next.dayIdx;
             const week = next.isFinished ? 1 : next.week;
-            
+
             let exercisesCopy = JSON.parse(JSON.stringify(obj.days[dayIdx].exercises));
-            
+
+            // Applicazione Progressione
             if (type === 'plan' && week > 1) {
                 exercisesCopy = exercisesCopy.map(ex => {
                     const multiplier = week - 1;
@@ -444,245 +426,457 @@
                 });
             }
 
-            activeSession = { 
-                parentId: obj.id, 
-                parentName: obj.name, 
-                type, 
-                week, 
-                dayIdx, 
-                dayName: obj.days[dayIdx].name, 
-                exercises: exercisesCopy 
+            activeSession = {
+                parentId: obj.id,
+                parentName: obj.name,
+                type,
+                week,
+                dayIdx,
+                dayName: obj.days[dayIdx].name,
+                exercises: exercisesCopy
             };
 
             document.getElementById('home-main-view').classList.add('hidden');
             document.getElementById('active-session-container').classList.remove('hidden');
             document.getElementById('header-back-btn').classList.remove('hidden');
             
-            secondsRemaining = 0; // Reset conta serie all'inizio sessione
-            isTimerRunning = false;
+            secondsRemaining = 0;
             updateSessionUI();
             window.scrollTo(0,0);
         }
 
         function updateSessionUI() {
-            document.getElementById('session-header').innerHTML = `
+            const header = document.getElementById('session-header');
+            header.innerHTML = `
                 <div class="p-6 bg-slate-800 rounded-[35px] border border-white/5 shadow-xl flex justify-between items-center">
                     <div>
-                        <p class="text-[9px] font-black uppercase text-emerald-500 mb-1">${activeSession.parentName} • S${activeSession.week}</p>
+                        <p class="text-[9px] font-black uppercase text-emerald-500 mb-1">${activeSession.parentName} • Settimana ${activeSession.week}</p>
                         <h2 class="text-2xl font-black text-white uppercase tracking-tighter">${activeSession.dayName}</h2>
                     </div>
                     <div class="flex items-center gap-4">
-                        <button onclick="adjustTimer(0)" class="reset-btn">Reset</button>
+                        <button onclick="adjustTimer()" class="reset-btn">Reset</button>
                         <div id="session-timer-val" onclick="toggleTimer()" class="counter-circle">0</div>
                     </div>
-                </div>`;
+                </div>
+            `;
 
-            document.getElementById('session-exercises').innerHTML = activeSession.exercises.map((ex, i) => `
+            const container = document.getElementById('session-exercises');
+            container.innerHTML = activeSession.exercises.map((ex, i) => `
                 <div class="bg-slate-800 p-7 rounded-[32px] border border-white/5 shadow-lg session-ex-card" data-index="${i}">
                     <div class="flex justify-between items-start mb-6">
-                        <div><h4 class="text-lg font-bold text-white mb-1">${ex.name}</h4><p class="text-[10px] font-black uppercase text-emerald-500 tracking-widest">${ex.sets}x${ex.reps} @ ${ex.kg}kg (Rec: ${ex.rest}s)</p></div>
-                        <div class="h-8 w-8 bg-slate-900 rounded-full flex items-center justify-center text-[10px] font-black text-slate-500">${i+1}</div>
+                        <div>
+                            <h4 class="text-lg font-bold text-white mb-1">${ex.name}</h4>
+                            <p class="text-[10px] font-black uppercase text-emerald-500 tracking-widest">
+                                ${ex.sets}x${ex.reps} @ ${ex.kg}kg <span class="text-slate-500 mx-1">/</span> Rec: ${ex.rest}s
+                            </p>
+                        </div>
+                        <div class="h-8 w-8 bg-slate-900 rounded-full flex items-center justify-center text-[10px] font-black text-slate-500">
+                            ${i+1}
+                        </div>
                     </div>
                     <div class="space-y-4">
-                        <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block text-center">Difficoltà (RPE)</label>
-                        <input type="range" min="1" max="10" value="7" oninput="this.nextElementSibling.innerText = this.value" class="w-full rpe-input">
+                        <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block text-center">Intensità Percepita (RPE)</label>
+                        <input type="range" min="1" max="10" value="7" 
+                               oninput="this.nextElementSibling.innerText = this.value" 
+                               class="w-full rpe-input">
                         <div class="text-center text-xl font-black text-emerald-500">7</div>
-                        <textarea class="w-full bg-slate-900 border border-white/5 rounded-[24px] p-4 text-xs text-white outline-none ex-comment" placeholder="Note tecniche..."></textarea>
+                        
+                        <textarea class="w-full bg-slate-900 border border-white/5 rounded-[24px] p-4 text-xs text-white outline-none focus:border-emerald-500/30 transition-colors ex-comment" 
+                                  placeholder="Note sull'esecuzione, fastidi o sensazioni..."></textarea>
                     </div>
-                </div>`).join('');
+                </div>
+            `).join('');
         }
 
-        // --- Nuova Logica Conta Serie (Invariata internamente come nomi funzioni) ---
+        // --- Timer Logic ---
         function toggleTimer() {
-            // Sostituisce il play/pause con l'incremento serie
             secondsRemaining++;
             updateTimerDisplay();
         }
 
-        function adjustTimer(val) {
-            // Sostituisce la modifica tempo con il RESET
+        function adjustTimer() {
             secondsRemaining = 0;
             updateTimerDisplay();
         }
 
         function updateTimerDisplay() {
             const display = document.getElementById('session-timer-val');
-            if(!display) return;
-            display.innerText = secondsRemaining;
+            if(display) display.innerText = secondsRemaining;
         }
 
-        // --- Session Actions (Finish/Skip) ---
+        // --- Save / Skip Session ---
         function finishSession() {
-            if(timerInterval) clearInterval(timerInterval);
-            const log = { 
-                id: Date.now(), 
-                parentId: activeSession.parentId, 
-                parentName: activeSession.parentName, 
-                type: activeSession.type, 
-                date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}), 
-                week: activeSession.week, 
-                dayIdx: activeSession.dayIdx, 
-                dayName: activeSession.dayName, 
-                isSkipped: false, 
-                finalNote: document.getElementById('session-final-note').value, 
-                exercises: [] 
+            const log = {
+                id: Date.now(),
+                parentId: activeSession.parentId,
+                parentName: activeSession.parentName,
+                type: activeSession.type,
+                date: new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'short' }),
+                week: activeSession.week,
+                dayIdx: activeSession.dayIdx,
+                dayName: activeSession.dayName,
+                isSkipped: false,
+                finalNote: document.getElementById('session-final-note').value,
+                exercises: []
             };
-            
+
             document.querySelectorAll('.session-ex-card').forEach(card => {
                 const idx = card.dataset.index;
                 const baseEx = activeSession.exercises[idx];
-                log.exercises.push({ 
-                    name: baseEx.name, sets: baseEx.sets, reps: baseEx.reps, kg: baseEx.kg, rest: baseEx.rest, 
-                    rating: card.querySelector('.rpe-input').value, 
-                    comment: card.querySelector('.ex-comment').value 
+                log.exercises.push({
+                    name: baseEx.name,
+                    sets: baseEx.sets,
+                    reps: baseEx.reps,
+                    kg: baseEx.kg,
+                    rest: baseEx.rest,
+                    rating: card.querySelector('.rpe-input').value,
+                    comment: card.querySelector('.ex-comment').value
                 });
             });
 
-            data.logs.unshift(log); 
+            data.logs.unshift(log);
 
             if(activeSession.type === 'plan') {
                 const plan = data.plans.find(p => p.id === activeSession.parentId);
-                const nextStatus = getNextSessionInfo(plan, 'plan');
-                if(nextStatus.isFinished) {
-                    plan.isArchived = true;
-                    alert("Ottimo! Programma archiviato.");
-                }
+                const check = getNextSessionInfo(plan, 'plan');
+                if(check.isFinished) plan.isArchived = true;
             }
-            saveToLocal(); 
+
+            saveToLocal();
             backToHome();
         }
 
-        function skipSession() { 
-            if(timerInterval) clearInterval(timerInterval);
-            data.logs.unshift({ 
-                id: Date.now(), parentId: activeSession.parentId, parentName: activeSession.parentName, 
-                type: activeSession.type, date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}), 
-                week: activeSession.week, dayIdx: activeSession.dayIdx, dayName: activeSession.dayName, 
-                isSkipped: true, finalNote: "SALTATO", exercises: [] 
-            }); 
-            saveToLocal(); 
-            backToHome(); 
+        function skipSession() {
+            const log = {
+                id: Date.now(),
+                parentId: activeSession.parentId,
+                parentName: activeSession.parentName,
+                type: activeSession.type,
+                date: new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'short' }),
+                week: activeSession.week,
+                dayIdx: activeSession.dayIdx,
+                dayName: activeSession.dayName,
+                isSkipped: true,
+                finalNote: "Sessione Saltata",
+                exercises: []
+            };
+            data.logs.unshift(log);
+            saveToLocal();
+            backToHome();
         }
 
-        function backToHome() { 
-            if(timerInterval) clearInterval(timerInterval);
-            document.getElementById('home-main-view').classList.remove('hidden'); 
-            document.getElementById('active-session-container').classList.add('hidden'); 
-            document.getElementById('header-back-btn').classList.add('hidden'); 
-            renderHome(); 
-            window.scrollTo(0,0);
+        function backToHome() {
+            document.getElementById('home-main-view').classList.remove('hidden');
+            document.getElementById('active-session-container').classList.add('hidden');
+            document.getElementById('header-back-btn').classList.add('hidden');
+            renderHome();
         }
 
-        // --- Create Mode Helpers ---
+        // --- Creation Tab Logic ---
         function setCreateMode(mode) {
             createMode = mode;
-            document.getElementById('btn-mode-plan').className = mode === 'plan' ? 'flex-1 py-3 rounded-[18px] text-[10px] font-black bg-emerald-500 text-slate-900 uppercase' : 'flex-1 py-3 rounded-[18px] text-[10px] font-black text-slate-400 uppercase';
-            document.getElementById('btn-mode-test').className = mode === 'test' ? 'flex-1 py-3 rounded-[18px] text-[10px] font-black bg-emerald-500 text-slate-900 uppercase' : 'flex-1 py-3 rounded-[18px] text-[10px] font-black text-slate-400 uppercase';
-            document.getElementById('weeks-input-container').style.display = mode === 'plan' ? 'block' : 'none';
+            const btnPlan = document.getElementById('btn-mode-plan');
+            const btnTest = document.getElementById('btn-mode-test');
+            const weeksContainer = document.getElementById('weeks-input-container');
+
+            if(mode === 'plan') {
+                btnPlan.className = 'flex-1 py-3 rounded-[18px] text-[10px] font-black bg-emerald-500 text-slate-900 uppercase transition-all';
+                btnTest.className = 'flex-1 py-3 rounded-[18px] text-[10px] font-black text-slate-400 uppercase transition-all';
+                weeksContainer.style.display = 'block';
+            } else {
+                btnPlan.className = 'flex-1 py-3 rounded-[18px] text-[10px] font-black text-slate-400 uppercase transition-all';
+                btnTest.className = 'flex-1 py-3 rounded-[18px] text-[10px] font-black bg-emerald-500 text-slate-900 uppercase transition-all';
+                weeksContainer.style.display = 'none';
+            }
         }
 
         function addCreateDay() {
+            const container = document.getElementById('create-days-container');
+            const dayId = Date.now();
             const html = `
-                <div class="create-day-box pt-10 border-t border-slate-700/50 first:border-t-0 mt-10 first:mt-0">
+                <div class="create-day-box pt-10 border-t border-slate-700/50 first:border-t-0 mt-10 first:mt-0" id="day-${dayId}">
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex-1">
                             <label class="text-[9px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-1 block">Nome Sessione</label>
-                            <input type="text" placeholder="Giorno A" class="day-name bg-transparent text-2xl font-black text-white outline-none w-full p-0 border-none focus:ring-0">
+                            <input type="text" placeholder="Giorno A - Spinta" class="day-name bg-transparent text-2xl font-black text-white outline-none w-full p-0">
                         </div>
-                        <button onclick="this.closest('.create-day-box').remove()" class="ml-4 p-3 bg-red-500/10 text-red-500 rounded-2xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        <button onclick="document.getElementById('day-${dayId}').remove()" class="p-3 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500/20 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                         </button>
                     </div>
                     <div class="create-ex-list space-y-8 mb-6"></div>
-                    <button onclick="addCreateExercise(this)" class="w-full py-4 rounded-[22px] bg-slate-900/50 border border-white/5 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-emerald-500">+ Esercizio</button>
-                </div>`;
-            document.getElementById('create-days-container').insertAdjacentHTML('beforeend', html);
+                    <button onclick="addCreateExercise(this)" class="w-full py-4 rounded-[22px] bg-slate-900/50 border border-white/5 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-white transition-all">+ Aggiungi Esercizio</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
         }
 
         function addCreateExercise(btn) {
             const list = btn.previousElementSibling;
             const html = `
-                <div class="create-ex-row group transition-all pt-4 first:pt-0">
+                <div class="create-ex-row group transition-all pt-4 first:pt-0 border-b border-white/5 pb-6 last:border-0">
                     <div class="flex flex-col gap-4">
-                        <div class="flex gap-3">
-                            <input type="text" placeholder="Esercizio" class="ex-name flex-1 text-sm bg-slate-900 p-4 rounded-[18px] outline-none font-bold border border-white/5 text-white">
+                        <div class="flex gap-3 items-center">
+                            <input type="text" placeholder="Nome Esercizio" class="ex-name flex-1 text-sm bg-slate-900 p-4 rounded-[18px] outline-none font-bold border border-white/5 text-white focus:border-emerald-500/30">
+                            
                             <div class="prog-btn-container" style="display: ${createMode === 'plan' ? 'block' : 'none'}">
-                                <button onclick="toggleProgression(this)" class="p-3 bg-slate-900/50 rounded-2xl text-[8px] font-black text-emerald-500 uppercase tracking-widest border border-white/5">Progressione</button>
+                                <button onclick="toggleProgression(this)" class="px-4 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl text-[8px] font-black text-emerald-500 uppercase tracking-widest border border-emerald-500/20 transition-colors">
+                                    Progressione
+                                </button>
                             </div>
-                            <button onclick="this.closest('.create-ex-row').remove()" class="p-2 text-slate-600 hover:text-red-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg>
+
+                            <button onclick="this.closest('.create-ex-row').remove()" class="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition-colors flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                             </button>
                         </div>
+
                         <div class="grid grid-cols-4 gap-2">
-                            <div class="space-y-1"><span class="text-[7px] font-black text-slate-500 uppercase ml-1">Serie</span><input type="number" placeholder="4" class="ex-sets w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-white/5 outline-none"></div>
-                            <div class="space-y-1"><span class="text-[7px] font-black text-slate-500 uppercase ml-1">Reps</span><input type="text" placeholder="10" class="ex-reps w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-white/5 outline-none"></div>
-                            <div class="space-y-1"><span class="text-[7px] font-black text-slate-500 uppercase ml-1">Kg</span><input type="number" placeholder="60" class="ex-kg w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-white/5 outline-none"></div>
-                            <div class="space-y-1"><span class="text-[7px] font-black text-slate-500 uppercase ml-1 text-[6px]">Rec(s)</span><input type="number" placeholder="90" class="ex-rest w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-white/5 outline-none"></div>
+                            <div class="space-y-1">
+                                <span class="text-[7px] font-black text-slate-500 uppercase ml-1">Serie</span>
+                                <input type="number" placeholder="4" class="ex-sets w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-white/5 outline-none focus:border-emerald-500/30">
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[7px] font-black text-slate-500 uppercase ml-1">Reps</span>
+                                <input type="text" placeholder="10" class="ex-reps w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-white/5 outline-none focus:border-emerald-500/30">
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[7px] font-black text-slate-500 uppercase ml-1">Kg</span>
+                                <input type="number" placeholder="60" class="ex-kg w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-white/5 outline-none focus:border-emerald-500/30">
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[7px] font-black text-slate-500 uppercase ml-1 text-[6px]">Rec (s)</span>
+                                <input type="number" placeholder="90" class="ex-rest w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-white/5 outline-none focus:border-emerald-500/30">
+                            </div>
                         </div>
-                        <div class="progression-inputs hidden space-y-2 animate-fadeIn">
-                            <span class="text-[8px] font-black text-emerald-500 uppercase ml-2 tracking-widest">Accumulo settimanale</span>
+
+                        <div class="progression-inputs hidden space-y-2 animate-fadeIn pt-2">
+                            <div class="flex items-center gap-2 ml-1">
+                                <div class="h-[1px] flex-1 bg-emerald-500/10"></div>
+                                <span class="text-[7px] font-black text-emerald-500 uppercase tracking-[0.2em]">Incremento Settimanale</span>
+                                <div class="h-[1px] flex-1 bg-emerald-500/10"></div>
+                            </div>
                             <div class="grid grid-cols-4 gap-2">
-                                <div class="bg-slate-900/30 p-2 rounded-[16px] border border-white/5"><span class="text-[7px] font-black text-slate-500 uppercase ml-1">Sets +</span><input type="number" placeholder="0" class="prog-sets w-full bg-transparent p-1 text-center font-bold text-white outline-none"></div>
-                                <div class="bg-slate-900/30 p-2 rounded-[16px] border border-white/5"><span class="text-[7px] font-black text-slate-500 uppercase ml-1">Reps +</span><input type="number" placeholder="0" class="prog-reps w-full bg-transparent p-1 text-center font-bold text-white outline-none"></div>
-                                <div class="bg-slate-900/30 p-2 rounded-[16px] border border-white/5"><span class="text-[7px] font-black text-slate-500 uppercase ml-1">Kg +</span><input type="number" step="0.5" placeholder="0" class="prog-kg w-full bg-transparent p-1 text-center font-bold text-white outline-none"></div>
-                                <div class="bg-slate-900/30 p-2 rounded-[16px] border border-white/5"><span class="text-[7px] font-black text-slate-500 uppercase ml-1">Rec -</span><input type="number" placeholder="0" class="prog-rest w-full bg-transparent p-1 text-center font-bold text-white outline-none"></div>
+                                <div class="space-y-1">
+                                    <span class="text-[7px] font-black text-emerald-500/50 uppercase ml-1">Sets +</span>
+                                    <input type="number" placeholder="0" class="prog-sets w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-emerald-500/20 outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-[7px] font-black text-emerald-500/50 uppercase ml-1">Reps +</span>
+                                    <input type="number" placeholder="0" class="prog-reps w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-emerald-500/20 outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-[7px] font-black text-emerald-500/50 uppercase ml-1">Kg +</span>
+                                    <input type="number" step="0.5" placeholder="0" class="prog-kg w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-emerald-500/20 outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-[7px] font-black text-emerald-500/50 uppercase ml-1">Rec -</span>
+                                    <input type="number" placeholder="0" class="prog-rest w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-emerald-500/20 outline-none">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>`;
+                </div>
+            `;
             list.insertAdjacentHTML('beforeend', html);
         }
 
         function toggleProgression(btn) {
-            const container = btn.closest('.create-ex-row').querySelector('.progression-inputs');
-            container.classList.toggle('hidden');
+            const row = btn.closest('.create-ex-row');
+            const inputs = row.querySelector('.progression-inputs');
+            inputs.classList.toggle('hidden');
         }
 
-        // --- History Rendering ---
-        function renderHistory() {
-            const cont = document.getElementById('history-container');
-            if(data.logs.length === 0) { 
-                cont.innerHTML = `<p class="text-center text-slate-500 py-20 uppercase font-black text-[10px] tracking-widest">Nessun log</p>`; 
-                return; 
+        function saveCreatedObject() {
+            const name = document.getElementById('create-name').value;
+            const editId = document.getElementById('edit-id').value;
+            if(!name) return alert("Inserisci un nome");
+
+            const obj = {
+                id: editId ? parseInt(editId) : Date.now(),
+                name: name,
+                isArchived: false,
+                weeks: createMode === 'plan' ? (parseInt(document.getElementById('create-weeks').value) || 1) : 1,
+                days: []
+            };
+
+            document.querySelectorAll('.create-day-box').forEach(dayBox => {
+                const day = {
+                    name: dayBox.querySelector('.day-name').value || "Sessione",
+                    exercises: []
+                };
+
+                dayBox.querySelectorAll('.create-ex-row').forEach(exRow => {
+                    const ex = {
+                        name: exRow.querySelector('.ex-name').value || "Esercizio",
+                        sets: exRow.querySelector('.ex-sets').value || "0",
+                        reps: exRow.querySelector('.ex-reps').value || "0",
+                        kg: exRow.querySelector('.ex-kg').value || "0",
+                        rest: exRow.querySelector('.ex-rest').value || "0"
+                    };
+
+                    if(createMode === 'plan') {
+                        ex.progression = {
+                            sets: exRow.querySelector('.prog-sets').value || "0",
+                            reps: exRow.querySelector('.prog-reps').value || "0",
+                            kg: exRow.querySelector('.prog-kg').value || "0",
+                            rest: exRow.querySelector('.prog-rest').value || "0"
+                        };
+                    }
+                    day.exercises.push(ex);
+                });
+                if(day.exercises.length > 0) obj.days.push(day);
+            });
+
+            if (editId) {
+                if(createMode === 'plan') {
+                    const idx = data.plans.findIndex(p => p.id == editId);
+                    obj.isArchived = data.plans[idx].isArchived;
+                    data.plans[idx] = obj;
+                } else {
+                    const idx = data.tests.findIndex(t => t.id == editId);
+                    data.tests[idx] = obj;
+                }
+            } else {
+                if(createMode === 'plan') data.plans.push(obj);
+                else data.tests.push(obj);
             }
-            cont.innerHTML = data.logs.map(log => {
-                const ratings = log.exercises.map(e => parseInt(e.rating)).filter(r => !isNaN(r));
-                const avgRpe = ratings.length > 0 ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : "N/A";
-                
+
+            saveToLocal();
+            location.reload();
+        }
+
+        function editObject(id, type) {
+            const obj = type === 'plan' ? data.plans.find(p => p.id === id) : data.tests.find(t => t.id === id);
+            if(!obj) return;
+
+            switchTab('create');
+            setCreateMode(type);
+
+            document.getElementById('edit-id').value = obj.id;
+            document.getElementById('create-name').value = obj.name;
+            document.getElementById('create-weeks').value = obj.weeks || 1;
+            document.getElementById('save-btn').innerText = 'Aggiorna Programma';
+
+            const existingDel = document.getElementById('delete-obj-btn');
+            if(existingDel) existingDel.remove();
+            
+            const delBtn = document.createElement('button');
+            delBtn.id = 'delete-obj-btn';
+            delBtn.className = 'w-full bg-red-500/10 text-red-500 py-4 rounded-[24px] font-black uppercase text-[10px] tracking-widest mb-4';
+            delBtn.innerText = 'Elimina Programma';
+            delBtn.onclick = () => {
+                if(confirm("Sei sicuro?")) {
+                    if(type === 'plan') data.plans = data.plans.filter(p => p.id !== id);
+                    else data.tests = data.tests.filter(t => t.id !== id);
+                    saveToLocal();
+                    location.reload();
+                }
+            };
+            document.getElementById('create-actions-container').prepend(delBtn);
+
+            document.getElementById('create-days-container').innerHTML = '';
+            obj.days.forEach(day => {
+                addCreateDay();
+                const dayBox = document.querySelector('.create-day-box:last-child');
+                dayBox.querySelector('.day-name').value = day.name;
+
+                day.exercises.forEach(ex => {
+                    addCreateExercise(dayBox.querySelector('button[onclick="addCreateExercise(this)"]'));
+                    const exRow = dayBox.querySelector('.create-ex-row:last-child');
+                    exRow.querySelector('.ex-name').value = ex.name;
+                    exRow.querySelector('.ex-sets').value = ex.sets;
+                    exRow.querySelector('.ex-reps').value = ex.reps;
+                    exRow.querySelector('.ex-kg').value = ex.kg;
+                    exRow.querySelector('.ex-rest').value = ex.rest;
+
+                    if(ex.progression) {
+                        const progDiv = exRow.querySelector('.progression-inputs');
+                        progDiv.classList.remove('hidden');
+                        exRow.querySelector('.prog-sets').value = ex.progression.sets;
+                        exRow.querySelector('.prog-reps').value = ex.progression.reps;
+                        exRow.querySelector('.prog-kg').value = ex.progression.kg;
+                        exRow.querySelector('.prog-rest').value = ex.progression.rest;
+                    }
+                });
+            });
+        }
+
+        // --- History / Logs Tab ---
+        function renderHistory() {
+            const container = document.getElementById('history-container');
+            if(data.logs.length === 0) {
+                container.innerHTML = `
+                    <div class="py-20 text-center">
+                        <p class="text-slate-600 font-black uppercase text-[10px] tracking-widest">Nessun allenamento registrato</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = data.logs.map(log => {
+                const validRatings = log.exercises.map(e => parseInt(e.rating)).filter(r => !isNaN(r));
+                const avgRpe = validRatings.length > 0 ? (validRatings.reduce((a, b) => a + b, 0) / validRatings.length).toFixed(1) : "N/A";
+
                 return `
-                <div class="bg-slate-800 p-8 rounded-[40px] border border-white/5 shadow-xl relative ${log.isSkipped ? 'opacity-40' : ''}">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <p class="text-[9px] font-black text-emerald-500 uppercase">${log.date} • S${log.week}</p>
-                            <h4 class="text-xl font-black text-white uppercase flex items-center gap-3">
-                                ${log.dayName} 
-                                <span class="text-[10px] bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded-lg border border-emerald-500/20 tracking-tighter">RPE ${avgRpe}</span>
-                            </h4>
-                        </div>
-                        <button onclick="deleteLog(${log.id})" class="p-3 bg-red-500/10 text-red-500 rounded-2xl">✕</button>
-                    </div>
-                    <div class="space-y-3">
-                        ${log.exercises.map(e => `
-                            <div class="bg-slate-900/50 p-4 rounded-[24px] border border-white/5">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-xs font-bold text-white">${e.name}</span>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[10px] text-emerald-500 font-black">${e.sets}x${e.reps} @ ${e.kg}kg</span>
-                                        <span class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">RPE ${e.rating}</span>
-                                    </div>
-                                </div>
-                                ${e.comment ? `<p class="text-[10px] text-slate-500 italic mt-2 border-t border-white/5 pt-2">${e.comment}</p>` : ''}
+                    <div class="bg-slate-800 p-8 rounded-[40px] border border-white/5 relative ${log.isSkipped ? 'opacity-40' : ''}">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">${log.date} • Sett. ${log.week}</p>
+                                <h4 class="text-xl font-black text-white uppercase flex items-center gap-3">
+                                    ${log.dayName}
+                                    <span class="text-[10px] bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded-lg border border-emerald-500/20 font-black">RPE ${avgRpe}</span>
+                                </h4>
+                                <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">${log.parentName}</p>
                             </div>
-                        `).join('')}
+                            <button onclick="deleteLog(${log.id})" class="p-3 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500/20 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            ${log.exercises.map(e => `
+                                <div class="bg-slate-900/50 p-4 rounded-[24px] border border-white/5">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs font-bold text-white">${e.name}</span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[10px] text-emerald-500 font-black">${e.sets}x${e.reps} @ ${e.kg}kg</span>
+                                            <span class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">RPE ${e.rating}</span>
+                                        </div>
+                                    </div>
+                                    ${e.comment ? `<p class="text-[10px] text-slate-500 italic mt-2 border-t border-white/5 pt-2">"${e.comment}"</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        ${log.finalNote ? `
+                            <div class="mt-6 pt-4 border-t border-white/5">
+                                <label class="text-[8px] font-black text-slate-600 uppercase tracking-widest block mb-1">Nota Sessione</label>
+                                <p class="text-[10px] text-slate-400 italic font-medium leading-relaxed">"${log.finalNote}"</p>
+                            </div>
+                        ` : ''}
                     </div>
-                    ${log.finalNote ? `<div class="mt-6 pt-4 border-t border-white/5"><label class="text-[8px] font-black text-slate-600 uppercase tracking-widest block mb-1">Nota Sessione</label><p class="text-[10px] text-slate-400 italic">"${log.finalNote}"</p></div>` : ''}
-                </div>`;
+                `;
             }).join('');
         }
 
-        function deleteLog(id) { if(confirm("Eliminare log?")) { data.logs = data.logs.filter(l => l.id !== id); saveToLocal(); renderHistory(); } }
-        
-        // --- Init ---
+        function deleteLog(id) {
+            if(confirm("Eliminare definitivamente questo log?")) {
+                data.logs = data.logs.filter(l => l.id !== id);
+                saveToLocal();
+                renderHistory();
+            }
+        }
+
+        function restoreObject(id) {
+            const plan = data.plans.find(p => p.id === id);
+            if(plan) {
+                plan.isArchived = false;
+                saveToLocal();
+                renderHome();
+                alert("Programma ripristinato!");
+            }
+        }
+
         renderHome();
     </script>
 </body>
