@@ -77,11 +77,33 @@
 
         ::-webkit-scrollbar { display: none; }
 
-        .timer-active { animation: timerPulse 2s infinite; color: #10b981 !important; }
-        @keyframes timerPulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        /* Stile specifico per il Conta Serie */
+        .counter-circle {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 900;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+            transition: transform 0.1s;
+        }
+        .counter-circle:active { transform: scale(0.9); }
         
-        .timer-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; }
-        .timer-btn:active { transform: scale(0.9); background: rgba(16, 185, 129, 0.2); }
+        .reset-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #64748b;
+            padding: 8px 12px;
+            border-radius: 14px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body class="pb-40">
@@ -177,39 +199,41 @@
     </nav>
 
     <script>
-        let data = JSON.parse(localStorage.getItem('gymDataV7.5')) || { plans: [], tests: [], logs: [] };
+        // --- Core Data & State ---
+        let data = JSON.parse(localStorage.getItem('gymDataV7.9')) || { plans: [], tests: [], logs: [] };
         let activeSession = null;
         let createMode = 'plan';
-        
-        // Timer Logic
         let timerInterval = null;
-        let secondsRemaining = 0;
+        let secondsRemaining = 0; // Usata qui come contatore serie
         let isTimerRunning = false;
 
-        const saveToLocal = () => localStorage.setItem('gymDataV7.5', JSON.stringify(data));
+        const saveToLocal = () => localStorage.setItem('gymDataV7.9', JSON.stringify(data));
 
+        // --- Navigation ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
+            
             const btnIdx = tabId === 'home' ? 0 : tabId === 'create' ? 1 : 2;
             document.querySelectorAll('.nav-button')[btnIdx].classList.add('active');
             
             if(tabId !== 'create') {
                 const delBtn = document.getElementById('delete-obj-btn');
                 if(delBtn) delBtn.remove();
+                document.getElementById('edit-id').value = '';
+                document.getElementById('save-btn').innerText = 'Salva Programma';
+                document.getElementById('create-days-container').innerHTML = '';
+                document.getElementById('create-name').value = '';
             }
 
             if(tabId === 'home') renderHome();
             if(tabId === 'history') renderHistory();
-            if(tabId !== 'create') {
-                document.getElementById('edit-id').value = '';
-                document.getElementById('save-btn').innerText = 'Salva Programma';
-            }
             backToHome();
             window.scrollTo(0,0);
         }
 
+        // --- Home Rendering ---
         function renderHome() {
             const planGrid = document.getElementById('plan-list');
             const archiveGrid = document.getElementById('archive-list');
@@ -240,7 +264,6 @@
                 }
             }
             const colorClass = type === 'plan' ? 'card-gradient-workout' : 'card-gradient-test';
-            
             let statusLabel = next.isFinished ? 'Completato' : `Prossimo: ${next.dayName} • S${next.week}`;
             if (isArchived) statusLabel = "Archiviato - Clicca per Ripristinare";
 
@@ -261,6 +284,7 @@
                 </div>`;
         }
 
+        // --- Data Management (Edit/Delete/Save) ---
         function editObject(id, type) {
             const obj = type === 'plan' ? data.plans.find(p => p.id === id) : data.tests.find(t => t.id === id);
             if(!obj) return;
@@ -293,14 +317,13 @@
                     exRow.querySelector('.ex-reps').value = ex.reps;
                     exRow.querySelector('.ex-kg').value = ex.kg;
                     exRow.querySelector('.ex-rest').value = ex.rest;
+                    
                     if(ex.progression && type === 'plan') {
+                        exRow.querySelector('.progression-inputs').classList.remove('hidden');
                         exRow.querySelector('.prog-sets').value = ex.progression.sets;
                         exRow.querySelector('.prog-reps').value = ex.progression.reps;
                         exRow.querySelector('.prog-kg').value = ex.progression.kg;
                         exRow.querySelector('.prog-rest').value = ex.progression.rest;
-                        if(Object.values(ex.progression).some(v => v != 0)) {
-                            exRow.querySelector('.progression-inputs').classList.remove('hidden');
-                        }
                     }
                 });
             });
@@ -326,51 +349,74 @@
             }
         }
 
+        function saveCreatedObject() {
+            const name = document.getElementById('create-name').value;
+            const editId = document.getElementById('edit-id').value;
+            if(!name) return alert("Nome mancante");
+            
+            const obj = { 
+                id: editId ? parseInt(editId) : Date.now(), 
+                name: name, 
+                isArchived: false, 
+                weeks: createMode === 'plan' ? (parseInt(document.getElementById('create-weeks').value) || 1) : 1, 
+                days: [] 
+            };
+            
+            document.querySelectorAll('.create-day-box').forEach(dayBox => {
+                const day = { name: dayBox.querySelector('.day-name').value || "Sessione", exercises: [] };
+                dayBox.querySelectorAll('.create-ex-row').forEach(exRow => {
+                    const ex = {
+                        name: exRow.querySelector('.ex-name').value || "Esercizio",
+                        sets: exRow.querySelector('.ex-sets').value || "0",
+                        reps: exRow.querySelector('.ex-reps').value || "0",
+                        kg: exRow.querySelector('.ex-kg').value || "0",
+                        rest: exRow.querySelector('.ex-rest').value || "0"
+                    };
+                    if(createMode === 'plan') {
+                        ex.progression = {
+                            sets: exRow.querySelector('.prog-sets').value || "0",
+                            reps: exRow.querySelector('.prog-reps').value || "0",
+                            kg: exRow.querySelector('.prog-kg').value || "0",
+                            rest: exRow.querySelector('.prog-rest').value || "0"
+                        };
+                    }
+                    day.exercises.push(ex);
+                });
+                if(day.exercises.length > 0) obj.days.push(day);
+            });
+
+            if (editId) {
+                if(createMode === 'plan') { 
+                    const idx = data.plans.findIndex(p => p.id == editId); 
+                    obj.isArchived = data.plans[idx].isArchived;
+                    data.plans[idx] = obj; 
+                }
+                else { const idx = data.tests.findIndex(t => t.id == editId); data.tests[idx] = obj; }
+            } else {
+                if(createMode === 'plan') data.plans.push(obj); else data.tests.push(obj);
+            }
+            saveToLocal();
+            location.reload();
+        }
+
+        // --- Session Management ---
         function getNextSessionInfo(obj, type) {
             const logs = data.logs.filter(l => l.parentId === obj.id);
             if(logs.length === 0) return { week: 1, dayIdx: 0, dayName: obj.days[0].name };
-            const last = logs[0];
+            
+            const last = logs[0]; 
             let nextWeek = last.week;
             let nextDayIdx = last.dayIdx + 1;
-            if(nextDayIdx >= obj.days.length) { nextDayIdx = 0; nextWeek++; }
+
+            if(nextDayIdx >= obj.days.length) { 
+                nextDayIdx = 0; 
+                nextWeek++; 
+            }
+            
             if(type === 'plan' && nextWeek > obj.weeks) return { isFinished: true };
             if(type === 'test' && nextWeek > 1) return { isFinished: true };
+            
             return { week: nextWeek, dayIdx: nextDayIdx, dayName: obj.days[nextDayIdx].name };
-        }
-
-        // --- New Timer Logic ---
-        function toggleTimer() {
-            if (isTimerRunning) {
-                clearInterval(timerInterval);
-                isTimerRunning = false;
-                document.getElementById('timer-toggle-btn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>';
-                document.getElementById('session-timer-val').classList.remove('timer-active');
-            } else {
-                if (secondsRemaining <= 0) secondsRemaining = 0;
-                isTimerRunning = true;
-                document.getElementById('timer-toggle-btn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 3.5A.5.5 0 0 1 6 4v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5z"/></svg>';
-                document.getElementById('session-timer-val').classList.add('timer-active');
-                
-                timerInterval = setInterval(() => {
-                    secondsRemaining--;
-                    updateTimerDisplay();
-                }, 1000);
-            }
-        }
-
-        function adjustTimer(sec) {
-            secondsRemaining += sec;
-            if (secondsRemaining < 0) secondsRemaining = 0;
-            updateTimerDisplay();
-        }
-
-        function updateTimerDisplay() {
-            const display = document.getElementById('session-timer-val');
-            const absSec = Math.abs(secondsRemaining);
-            const mins = Math.floor(absSec / 60);
-            const secs = absSec % 60;
-            const sign = secondsRemaining < 0 ? "-" : "";
-            display.innerText = `${sign}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
         function startSession(id, type) {
@@ -380,6 +426,7 @@
             const week = next.isFinished ? 1 : next.week;
             
             let exercisesCopy = JSON.parse(JSON.stringify(obj.days[dayIdx].exercises));
+            
             if (type === 'plan' && week > 1) {
                 exercisesCopy = exercisesCopy.map(ex => {
                     const multiplier = week - 1;
@@ -397,12 +444,21 @@
                 });
             }
 
-            activeSession = { parentId: obj.id, parentName: obj.name, type, week, dayIdx, dayName: obj.days[dayIdx].name, exercises: exercisesCopy };
+            activeSession = { 
+                parentId: obj.id, 
+                parentName: obj.name, 
+                type, 
+                week, 
+                dayIdx, 
+                dayName: obj.days[dayIdx].name, 
+                exercises: exercisesCopy 
+            };
+
             document.getElementById('home-main-view').classList.add('hidden');
             document.getElementById('active-session-container').classList.remove('hidden');
             document.getElementById('header-back-btn').classList.remove('hidden');
             
-            secondsRemaining = 0;
+            secondsRemaining = 0; // Reset conta serie all'inizio sessione
             isTimerRunning = false;
             updateSessionUI();
             window.scrollTo(0,0);
@@ -415,15 +471,9 @@
                         <p class="text-[9px] font-black uppercase text-emerald-500 mb-1">${activeSession.parentName} • S${activeSession.week}</p>
                         <h2 class="text-2xl font-black text-white uppercase tracking-tighter">${activeSession.dayName}</h2>
                     </div>
-                    <div class="flex flex-col items-end gap-2">
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="adjustTimer(-30)" class="timer-btn h-7 w-7 rounded-lg flex items-center justify-center text-xs font-bold text-slate-400">-</button>
-                            <div id="session-timer-val" class="text-xl font-black text-white font-mono px-2">00:00</div>
-                            <button onclick="adjustTimer(30)" class="timer-btn h-7 w-7 rounded-lg flex items-center justify-center text-xs font-bold text-slate-400">+</button>
-                        </div>
-                        <button id="timer-toggle-btn" onclick="toggleTimer()" class="w-full bg-emerald-500/10 text-emerald-500 py-2 rounded-xl flex items-center justify-center border border-emerald-500/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
-                        </button>
+                    <div class="flex items-center gap-4">
+                        <button onclick="adjustTimer(0)" class="reset-btn">Reset</button>
+                        <div id="session-timer-val" onclick="toggleTimer()" class="counter-circle">0</div>
                     </div>
                 </div>`;
 
@@ -442,8 +492,28 @@
                 </div>`).join('');
         }
 
+        // --- Nuova Logica Conta Serie (Invariata internamente come nomi funzioni) ---
+        function toggleTimer() {
+            // Sostituisce il play/pause con l'incremento serie
+            secondsRemaining++;
+            updateTimerDisplay();
+        }
+
+        function adjustTimer(val) {
+            // Sostituisce la modifica tempo con il RESET
+            secondsRemaining = 0;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('session-timer-val');
+            if(!display) return;
+            display.innerText = secondsRemaining;
+        }
+
+        // --- Session Actions (Finish/Skip) ---
         function finishSession() {
-            clearInterval(timerInterval);
+            if(timerInterval) clearInterval(timerInterval);
             const log = { 
                 id: Date.now(), 
                 parentId: activeSession.parentId, 
@@ -467,6 +537,7 @@
                     comment: card.querySelector('.ex-comment').value 
                 });
             });
+
             data.logs.unshift(log); 
 
             if(activeSession.type === 'plan') {
@@ -482,13 +553,19 @@
         }
 
         function skipSession() { 
-            clearInterval(timerInterval);
-            data.logs.unshift({ id: Date.now(), parentId: activeSession.parentId, parentName: activeSession.parentName, type: activeSession.type, date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}), week: activeSession.week, dayIdx: activeSession.dayIdx, dayName: activeSession.dayName, isSkipped: true, finalNote: "SALTATO", exercises: [] }); 
-            saveToLocal(); backToHome(); 
+            if(timerInterval) clearInterval(timerInterval);
+            data.logs.unshift({ 
+                id: Date.now(), parentId: activeSession.parentId, parentName: activeSession.parentName, 
+                type: activeSession.type, date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}), 
+                week: activeSession.week, dayIdx: activeSession.dayIdx, dayName: activeSession.dayName, 
+                isSkipped: true, finalNote: "SALTATO", exercises: [] 
+            }); 
+            saveToLocal(); 
+            backToHome(); 
         }
 
         function backToHome() { 
-            clearInterval(timerInterval);
+            if(timerInterval) clearInterval(timerInterval);
             document.getElementById('home-main-view').classList.remove('hidden'); 
             document.getElementById('active-session-container').classList.add('hidden'); 
             document.getElementById('header-back-btn').classList.add('hidden'); 
@@ -496,6 +573,7 @@
             window.scrollTo(0,0);
         }
 
+        // --- Create Mode Helpers ---
         function setCreateMode(mode) {
             createMode = mode;
             document.getElementById('btn-mode-plan').className = mode === 'plan' ? 'flex-1 py-3 rounded-[18px] text-[10px] font-black bg-emerald-500 text-slate-900 uppercase' : 'flex-1 py-3 rounded-[18px] text-[10px] font-black text-slate-400 uppercase';
@@ -560,52 +638,13 @@
             container.classList.toggle('hidden');
         }
 
-        function saveCreatedObject() {
-            const name = document.getElementById('create-name').value;
-            const editId = document.getElementById('edit-id').value;
-            if(!name) return alert("Nome mancante");
-            const obj = { id: editId ? parseInt(editId) : Date.now(), name: name, isArchived: false, weeks: createMode === 'plan' ? (parseInt(document.getElementById('create-weeks').value) || 1) : 1, days: [] };
-            
-            document.querySelectorAll('.create-day-box').forEach(dayBox => {
-                const day = { name: dayBox.querySelector('.day-name').value || "Sessione", exercises: [] };
-                dayBox.querySelectorAll('.create-ex-row').forEach(exRow => {
-                    const ex = {
-                        name: exRow.querySelector('.ex-name').value || "Esercizio",
-                        sets: exRow.querySelector('.ex-sets').value || "0",
-                        reps: exRow.querySelector('.ex-reps').value || "0",
-                        kg: exRow.querySelector('.ex-kg').value || "0",
-                        rest: exRow.querySelector('.ex-rest').value || "0"
-                    };
-                    if(createMode === 'plan') {
-                        ex.progression = {
-                            sets: exRow.querySelector('.prog-sets').value || "0",
-                            reps: exRow.querySelector('.prog-reps').value || "0",
-                            kg: exRow.querySelector('.prog-kg').value || "0",
-                            rest: exRow.querySelector('.prog-rest').value || "0"
-                        };
-                    }
-                    day.exercises.push(ex);
-                });
-                if(day.exercises.length > 0) obj.days.push(day);
-            });
-
-            if (editId) {
-                if(createMode === 'plan') { 
-                    const idx = data.plans.findIndex(p => p.id == editId); 
-                    obj.isArchived = data.plans[idx].isArchived;
-                    data.plans[idx] = obj; 
-                }
-                else { const idx = data.tests.findIndex(t => t.id == editId); data.tests[idx] = obj; }
-            } else {
-                if(createMode === 'plan') data.plans.push(obj); else data.tests.push(obj);
-            }
-            saveToLocal();
-            location.reload();
-        }
-
+        // --- History Rendering ---
         function renderHistory() {
             const cont = document.getElementById('history-container');
-            if(data.logs.length === 0) { cont.innerHTML = `<p class="text-center text-slate-500 py-20 uppercase font-black text-[10px] tracking-widest">Nessun log</p>`; return; }
+            if(data.logs.length === 0) { 
+                cont.innerHTML = `<p class="text-center text-slate-500 py-20 uppercase font-black text-[10px] tracking-widest">Nessun log</p>`; 
+                return; 
+            }
             cont.innerHTML = data.logs.map(log => {
                 const ratings = log.exercises.map(e => parseInt(e.rating)).filter(r => !isNaN(r));
                 const avgRpe = ratings.length > 0 ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : "N/A";
@@ -643,6 +682,7 @@
 
         function deleteLog(id) { if(confirm("Eliminare log?")) { data.logs = data.logs.filter(l => l.id !== id); saveToLocal(); renderHistory(); } }
         
+        // --- Init ---
         renderHome();
     </script>
 </body>
