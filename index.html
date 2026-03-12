@@ -139,6 +139,25 @@
         .animate-fadeIn {
             animation: fadeIn 0.3s ease-out;
         }
+
+        /* Stili per il Log compatto */
+        .log-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+            opacity: 0;
+        }
+        .log-card.open .log-details {
+            max-height: 2000px; /* Valore alto per permettere l'espansione */
+            opacity: 1;
+            margin-top: 1.5rem;
+        }
+        .log-chevron {
+            transition: transform 0.3s;
+        }
+        .log-card.open .log-chevron {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body class="pb-40">
@@ -619,12 +638,6 @@
                         <div class="flex gap-3 items-center">
                             <input type="text" placeholder="Nome Esercizio" class="ex-name flex-1 text-sm bg-slate-900 p-4 rounded-[18px] outline-none font-bold border border-white/5 text-white focus:border-emerald-500/30">
                             
-                            <div class="prog-btn-container" style="display: ${createMode === 'plan' ? 'block' : 'none'}">
-                                <button onclick="toggleProgression(this)" class="px-4 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl text-[8px] font-black text-emerald-500 uppercase tracking-widest border border-emerald-500/20 transition-colors">
-                                    Progressione
-                                </button>
-                            </div>
-
                             <button onclick="this.closest('.create-ex-row').remove()" class="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition-colors flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                             </button>
@@ -647,6 +660,12 @@
                                 <span class="text-[7px] font-black text-slate-500 uppercase ml-1 text-[6px]">Rec (s)</span>
                                 <input type="number" placeholder="90" class="ex-rest w-full bg-slate-900 p-3 rounded-[16px] text-center font-bold text-white border border-white/5 outline-none focus:border-emerald-500/30">
                             </div>
+                        </div>
+
+                        <div class="prog-btn-container text-center py-1" style="display: ${createMode === 'plan' ? 'block' : 'none'}">
+                            <button onclick="toggleProgression(this)" class="text-[8px] font-black text-emerald-500/70 uppercase tracking-widest hover:text-emerald-500 transition-all">
+                                + Imposta Progressione Settimanale
+                            </button>
                         </div>
 
                         <div class="progression-inputs hidden space-y-2 animate-fadeIn pt-2">
@@ -684,6 +703,7 @@
             const row = btn.closest('.create-ex-row');
             const inputs = row.querySelector('.progression-inputs');
             inputs.classList.toggle('hidden');
+            btn.innerText = inputs.classList.contains('hidden') ? '+ Imposta Progressione Settimanale' : '− Nascondi Progressione';
         }
 
         function saveCreatedObject() {
@@ -790,12 +810,17 @@
                     exRow.querySelector('.ex-rest').value = ex.rest;
 
                     if(ex.progression) {
-                        const progDiv = exRow.querySelector('.progression-inputs');
-                        progDiv.classList.remove('hidden');
-                        exRow.querySelector('.prog-sets').value = ex.progression.sets;
-                        exRow.querySelector('.prog-reps').value = ex.progression.reps;
-                        exRow.querySelector('.prog-kg').value = ex.progression.kg;
-                        exRow.querySelector('.prog-rest').value = ex.progression.rest;
+                        const hasValues = Object.values(ex.progression).some(v => v !== "0" && v !== "");
+                        if(hasValues) {
+                           const progDiv = exRow.querySelector('.progression-inputs');
+                           const progBtn = exRow.querySelector('.prog-btn-container button');
+                           progDiv.classList.remove('hidden');
+                           progBtn.innerText = '− Nascondi Progressione';
+                           exRow.querySelector('.prog-sets').value = ex.progression.sets;
+                           exRow.querySelector('.prog-reps').value = ex.progression.reps;
+                           exRow.querySelector('.prog-kg').value = ex.progression.kg;
+                           exRow.querySelector('.prog-rest').value = ex.progression.rest;
+                        }
                     }
                 });
             });
@@ -818,9 +843,9 @@
                 const avgRpe = validRatings.length > 0 ? (validRatings.reduce((a, b) => a + b, 0) / validRatings.length).toFixed(1) : "N/A";
 
                 return `
-                    <div class="bg-slate-800 p-8 rounded-[40px] border border-white/5 relative ${log.isSkipped ? 'opacity-40' : ''}">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
+                    <div class="bg-slate-800 p-8 rounded-[40px] border border-white/5 relative log-card ${log.isSkipped ? 'opacity-40' : ''}" onclick="toggleLogExpansion(this)">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
                                 <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">${log.date} • Sett. ${log.week}</p>
                                 <h4 class="text-xl font-black text-white uppercase flex items-center gap-3">
                                     ${log.dayName}
@@ -828,35 +853,46 @@
                                 </h4>
                                 <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">${log.parentName}</p>
                             </div>
-                            <button onclick="deleteLog(${log.id})" class="p-3 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500/20 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-                            </button>
+                            <div class="flex flex-col items-end gap-4 ml-4" onclick="event.stopPropagation()">
+                                <button onclick="deleteLog(${log.id})" class="p-3 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500/20 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                                </button>
+                                <div class="log-chevron text-slate-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="space-y-3">
-                            ${log.exercises.map(e => `
-                                <div class="bg-slate-900/50 p-4 rounded-[24px] border border-white/5">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-xs font-bold text-white">${e.name}</span>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-[10px] text-emerald-500 font-black">${e.sets}x${e.reps} @ ${e.kg}kg</span>
-                                            <span class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">RPE ${e.rating}</span>
+                        <div class="log-details">
+                            <div class="space-y-3">
+                                ${log.exercises.map(e => `
+                                    <div class="bg-slate-900/50 p-4 rounded-[24px] border border-white/5">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-xs font-bold text-white">${e.name}</span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] text-emerald-500 font-black">${e.sets}x${e.reps} @ ${e.kg}kg</span>
+                                                <span class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">RPE ${e.rating}</span>
+                                            </div>
                                         </div>
+                                        ${e.comment ? `<p class="text-[10px] text-slate-500 italic mt-2 border-t border-white/5 pt-2">"${e.comment}"</p>` : ''}
                                     </div>
-                                    ${e.comment ? `<p class="text-[10px] text-slate-500 italic mt-2 border-t border-white/5 pt-2">"${e.comment}"</p>` : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-
-                        ${log.finalNote ? `
-                            <div class="mt-6 pt-4 border-t border-white/5">
-                                <label class="text-[8px] font-black text-slate-600 uppercase tracking-widest block mb-1">Nota Sessione</label>
-                                <p class="text-[10px] text-slate-400 italic font-medium leading-relaxed">"${log.finalNote}"</p>
+                                `).join('')}
                             </div>
-                        ` : ''}
+
+                            ${log.finalNote ? `
+                                <div class="mt-6 pt-4 border-t border-white/5">
+                                    <label class="text-[8px] font-black text-slate-600 uppercase tracking-widest block mb-1">Nota Sessione</label>
+                                    <p class="text-[10px] text-slate-400 italic font-medium leading-relaxed">"${log.finalNote}"</p>
+                                </div>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        function toggleLogExpansion(card) {
+            card.classList.toggle('open');
         }
 
         function deleteLog(id) {
