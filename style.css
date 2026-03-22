@@ -1,6 +1,15 @@
 /* Custom Styles */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+button, a {
+    outline: none !important;
+}
+button:focus, a:focus {
+    outline: none !important;
+}
 body {
     font-family: 'Inter', sans-serif;
     -webkit-tap-highlight-color: transparent;
