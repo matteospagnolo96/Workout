@@ -1,4 +1,4 @@
-const CACHE_NAME = 'olympus-pro-v1';
+const CACHE_NAME = 'olympus-pro-v2';
 const ASSETS = [
     './',
     './index.html',
