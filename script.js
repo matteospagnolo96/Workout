@@ -309,17 +309,16 @@ function updateSessionUI() {
 
     const container = document.getElementById('session-exercises');
     container.innerHTML = activeSession.exercises.map((ex, i) => `
-        <div class="bg-slate-800 p-7 rounded-[32px] border border-white/5 session-ex-card" data-index="${i}">
-            <div class="mb-6">
-                <h4 class="text-lg font-bold text-white">${ex.name}</h4>
-                <p class="text-[10px] font-black uppercase text-emerald-500">${ex.sets}x${ex.reps} @ ${ex.kg}kg • ${ex.rest}s</p>
-            </div>
+        <div class="bg-slate-800 p-4 rounded-[24px] border border-white/5 session-ex-card" data-index="${i}">
             <div class="flex justify-between items-center mb-3">
-                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Sforzo (RPE)</label>
-                <span class="text-emerald-500 font-extrabold text-lg rpe-val-display relative tabular-nums">7</span>
+                <div>
+                    <h4 class="text-sm font-bold text-white leading-tight">${ex.name}</h4>
+                    <p class="text-[10px] font-black uppercase text-emerald-500 mt-0.5">${ex.sets}×${ex.reps} @ ${ex.kg}kg · ${ex.rest}s</p>
+                </div>
+                <span class="text-emerald-500 font-extrabold text-xl rpe-val-display tabular-nums shrink-0 ml-3">5</span>
             </div>
-            <input type="range" min="1" max="10" value="7" oninput="this.parentElement.querySelector('.rpe-val-display').innerText = this.value" class="w-full rpe-input mb-6 outline-none bg-slate-900 h-1 rounded-full appearance-none accent-emerald-500">
-            <textarea class="w-full bg-slate-900 rounded-2xl p-4 text-xs text-white outline-none ex-comment border border-white/5 focus:border-emerald-500/30 transition-all placeholder:text-slate-600" placeholder="Note esercizio..."></textarea>
+            <input type="range" min="1" max="10" value="5" oninput="this.parentElement.querySelector('.rpe-val-display').innerText = this.value" class="w-full rpe-input mb-3 outline-none bg-slate-900 h-1 rounded-full appearance-none accent-emerald-500">
+            <textarea rows="1" class="w-full bg-slate-900 rounded-xl p-3 text-xs text-white outline-none ex-comment border border-white/5 focus:border-emerald-500/30 transition-all placeholder:text-slate-600" placeholder="Note..."></textarea>
         </div>
     `).join('');
 }
