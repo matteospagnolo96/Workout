@@ -147,7 +147,8 @@ function renderHistory() {
                         <div class="flex justify-between items-start border-b border-white/5 pb-3 last:border-0 last:pb-0">
                             <div>
                                 <h5 class="text-sm font-bold text-white mb-1.5">${ex.name}</h5>
-                                ${ex.comment ? `<p class="text-xs text-slate-400 italic">"${ex.comment}"</p>` : ''}
+                                <p class="text-[10px] font-black uppercase text-slate-300 mb-1">${ex.sets}×${ex.reps} @ ${ex.kg}kg</p>
+                                ${ex.comment ? `<p class="text-[10px] text-slate-400 italic mt-1">"${ex.comment}"</p>` : ''}
                             </div>
                             <span class="text-[9px] font-black uppercase bg-slate-900 border border-white/5 text-emerald-500 px-2 py-1 rounded shrink-0 ml-3">RPE ${ex.rpe || '-'}</span>
                         </div>
