@@ -10,6 +10,7 @@ let data = { plans: [], tests: [], logs: [] };
 let activeSession = null;
 let createMode = 'plan';
 let currentUser = null;
+let isSaving = false;
 
 // --- Inizializzazione ---
 async function init() {
@@ -163,7 +164,10 @@ function renderHistory() {
                 ` : `
                 <p class="text-[10px] text-slate-400 uppercase tracking-widest font-black">Questa sessione è stata ignorata.</p>
                 `}
-                <div class="mt-5 pt-4 border-t border-white/5 flex justify-end">
+                <div class="mt-5 pt-4 border-t border-white/5 flex justify-end gap-3">
+                    <button onclick="editLog(${log.id})" class="text-[9px] font-black uppercase tracking-widest text-amber-500 bg-amber-500/10 px-4 py-2.5 rounded-xl hover:bg-amber-500/20 transition-colors">
+                         Modifica
+                    </button>
                     <button onclick="deleteLog(${log.id})" class="text-[9px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 px-4 py-2.5 rounded-xl hover:bg-red-500/20 transition-colors">
                          Annulla Sessione
                     </button>
@@ -286,6 +290,8 @@ function startSession(id, type) {
         });
     }
 
+    document.getElementById('session-final-note').value = '';
+
     document.getElementById('home-main-view').classList.add('hidden');
     document.getElementById('active-session-container').classList.remove('hidden');
     document.getElementById('header-back-btn').classList.remove('hidden');
@@ -316,41 +322,60 @@ function updateSessionUI() {
                     <h4 class="text-sm font-bold text-white leading-tight">${ex.name}</h4>
                     <p class="text-[10px] font-black uppercase text-emerald-500 mt-0.5">${ex.sets}×${ex.reps} @ ${ex.kg}kg · ${ex.rest}s</p>
                 </div>
-                <span class="text-emerald-500 font-extrabold text-xl rpe-val-display tabular-nums shrink-0 ml-3">5</span>
+                <span class="text-emerald-500 font-extrabold text-xl rpe-val-display tabular-nums shrink-0 ml-3">${ex.rpe || 5}</span>
             </div>
-            <input type="range" min="1" max="10" value="5" oninput="this.parentElement.querySelector('.rpe-val-display').innerText = this.value" class="w-full rpe-input mb-3 outline-none bg-slate-900 h-1 rounded-full appearance-none accent-emerald-500">
-            <textarea rows="1" class="w-full bg-slate-900 rounded-xl p-3 text-xs text-white outline-none ex-comment border border-white/5 focus:border-emerald-500/30 transition-all placeholder:text-slate-600" placeholder="Note..."></textarea>
+            <input type="range" min="1" max="10" value="${ex.rpe || 5}" oninput="this.parentElement.querySelector('.rpe-val-display').innerText = this.value" class="w-full rpe-input mb-3 outline-none bg-slate-900 h-1 rounded-full appearance-none accent-emerald-500">
+            <textarea rows="1" class="w-full bg-slate-900 rounded-xl p-3 text-xs text-white outline-none ex-comment border border-white/5 focus:border-emerald-500/30 transition-all placeholder:text-slate-600" placeholder="Note...">${ex.comment || ''}</textarea>
         </div>
     `).join('');
 }
 
 async function finishSession() {
-    const log = {
-        id: Date.now(), parentId: activeSession.parentId, parentName: activeSession.parentName,
-        week: activeSession.week, dayIdx: activeSession.dayIdx, dayName: activeSession.dayName,
-        date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
-        isSkipped: false, finalNote: document.getElementById('session-final-note').value,
-        exercises: []
-    };
+    if (isSaving) return;
+    isSaving = true;
 
-    document.querySelectorAll('.session-ex-card').forEach(card => {
-        const idx = card.dataset.index;
-        const baseEx = activeSession.exercises[idx];
-        log.exercises.push({
-            name: baseEx.name,
-            sets: baseEx.sets,
-            reps: baseEx.reps,
-            kg: baseEx.kg,
-            rest: baseEx.rest,
-            comment: card.querySelector('.ex-comment').value,
-            rpe: card.querySelector('.rpe-input').value
+    try {
+        const log = {
+            id: activeSession.isEditing ? activeSession.logId : Date.now(), 
+            parentId: activeSession.parentId, parentName: activeSession.parentName,
+            week: activeSession.week, dayIdx: activeSession.dayIdx, dayName: activeSession.dayName,
+            date: activeSession.isEditing ? activeSession.date : new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
+            isSkipped: false, finalNote: document.getElementById('session-final-note').value,
+            exercises: []
+        };
+
+        document.querySelectorAll('.session-ex-card').forEach(card => {
+            const idx = card.dataset.index;
+            const baseEx = activeSession.exercises[idx];
+            log.exercises.push({
+                name: baseEx.name,
+                sets: baseEx.sets,
+                reps: baseEx.reps,
+                kg: baseEx.kg,
+                rest: baseEx.rest,
+                comment: card.querySelector('.ex-comment').value,
+                rpe: card.querySelector('.rpe-input').value
+            });
         });
-    });
 
-    await syncToSupabase('logs', log);
-    await loadAllData();
-    await checkAutoArchive(activeSession.type, activeSession.parentId);
-    backToHome();
+        await syncToSupabase('logs', log);
+        await loadAllData();
+        if (!activeSession.isEditing) {
+            await checkAutoArchive(activeSession.type, activeSession.parentId);
+        }
+        
+        if (activeSession.isEditing) {
+            switchTab('history');
+            document.getElementById('home-main-view').classList.remove('hidden');
+            document.getElementById('active-session-container').classList.add('hidden');
+            document.getElementById('header-back-btn').classList.add('hidden');
+            activeSession = null;
+        } else {
+            backToHome();
+        }
+    } finally {
+        isSaving = false;
+    }
 }
 
 function backToHome() {
@@ -361,18 +386,24 @@ function backToHome() {
 }
 
 async function skipSession() {
-    if(!activeSession) return;
-    const log = {
-        id: Date.now(), parentId: activeSession.parentId, parentName: activeSession.parentName,
-        week: activeSession.week, dayIdx: activeSession.dayIdx, dayName: activeSession.dayName,
-        date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
-        isSkipped: true, finalNote: 'Sessione saltata',
-        exercises: []
-    };
-    await syncToSupabase('logs', log);
-    await loadAllData();
-    await checkAutoArchive(activeSession.type, activeSession.parentId);
-    backToHome();
+    if(!activeSession || isSaving) return;
+    isSaving = true;
+
+    try {
+        const log = {
+            id: Date.now(), parentId: activeSession.parentId, parentName: activeSession.parentName,
+            week: activeSession.week, dayIdx: activeSession.dayIdx, dayName: activeSession.dayName,
+            date: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'short'}),
+            isSkipped: true, finalNote: 'Sessione saltata',
+            exercises: []
+        };
+        await syncToSupabase('logs', log);
+        await loadAllData();
+        await checkAutoArchive(activeSession.type, activeSession.parentId);
+        backToHome();
+    } finally {
+        isSaving = false;
+    }
 }
 
 // --- Funzioni di Creazione (Ripristinate v7.9) ---
@@ -638,6 +669,32 @@ async function deleteLog(id) {
     } else {
         alert("Si è verificato un errore durante l'annullamento.");
     }
+}
+
+async function editLog(id) {
+    const log = data.logs.find(l => l.id === id);
+    if (!log) return;
+    
+    activeSession = {
+        isEditing: true,
+        logId: log.id,
+        parentId: log.parentId,
+        parentName: log.parentName,
+        week: log.week,
+        dayIdx: log.dayIdx,
+        dayName: log.dayName,
+        date: log.date,
+        exercises: JSON.parse(JSON.stringify(log.exercises))
+    };
+
+    document.getElementById('session-final-note').value = log.finalNote || '';
+
+    switchTab('home');
+    document.getElementById('home-main-view').classList.add('hidden');
+    document.getElementById('active-session-container').classList.remove('hidden');
+    document.getElementById('header-back-btn').classList.remove('hidden');
+    
+    updateSessionUI();
 }
 
 // Avvio
